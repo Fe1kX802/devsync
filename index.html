@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>DevSync</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="icon" type="image/png" href="images/favicon.png">
+</head>
+<body>
+  <!-- Фоновые эффекты -->
+  <div class="gradient-background"></div>
+  <div class="space-background"></div>
+  <div id="network-wrapper">
+    <canvas id="network-canvas"></canvas>
+  </div>
+  <canvas id="particles-bg"></canvas>
+  
+  <!-- Верхняя панель -->
+  <header class="main-header">
+    <div class="logo">
+      <img src="images/logo.png" alt="DevSync Logo">
+      <h1 class="header-title">DevSync</h1>
+    </div>
+    
+    <div class="user-section">
+      <!-- Секция будет заменена на аватар и имя пользователя после входа -->
+      <div class="auth-buttons" id="authButtons">
+        <button id="loginBtn" class="auth-button login-button">
+          <i class="fas fa-sign-in-alt"></i> Войти
+        </button>
+        <button id="registerBtn" class="auth-button register-button">
+          <i class="fas fa-user-plus"></i> Регистрация
+        </button>
+      </div>
+      
+      <div class="user-profile" id="userProfile" style="display: none;">
+        <div class="avatar-container">
+          <img id="userAvatar" src="images/default-avatar.png" alt="Аватар пользователя">
+        </div>
+        <span id="userName">Имя пользователя</span>
+        <div class="user-menu-toggle">
+          <i class="fas fa-angle-down"></i>
+          <div class="user-menu">
+            <a href="#" class="user-menu-item edit-profile-option">
+              <i class="fas fa-user-edit"></i> Редактировать профиль
+            </a>
+            <a href="#" class="user-menu-item settings-option">
+              <i class="fas fa-cog"></i> Настройки
+            </a>
+            <a href="#" class="user-menu-item logout-option">
+              <i class="fas fa-sign-out-alt"></i> Выйти
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="groups-nav">
+      <div class="group-pills" id="userGroups">
+        <!-- Группы будут добавлены динамически -->
+        <div class="empty-groups-message">Войдите, чтобы увидеть ваши группы</div>
+      </div>
+      <button id="createGroupBtn" class="create-group-button">
+        <i class="fas fa-plus-circle"></i>
+      </button>
+    </div>
+  </header>
+  
+  <!-- Основное содержимое -->
+  <main class="workspace">
+    <!-- Левая панель: Файлообменник -->
+    <section class="file-exchange panel">
+      <div class="panel-header">
+        <h2><i class="fas fa-file-upload"></i> Файлообменник</h2>
+        <div class="panel-controls">
+          <button id="uploadFileBtn" class="control-button">
+            <i class="fas fa-upload"></i> Загрузить
+          </button>
+          <div class="search-box">
+            <input type="text" id="fileSearchInput" placeholder="Поиск файлов...">
+            <i class="fas fa-search"></i>
+          </div>
+        </div>
+      </div>
+      
+      <div class="file-list-container">
+        <div class="file-filters">
+          <button class="filter-btn active" data-filter="all">Все</button>
+          <button class="filter-btn" data-filter="images">Изображения</button>
+          <button class="filter-btn" data-filter="documents">Документы</button>
+          <button class="filter-btn" data-filter="code">Код</button>
+          <button class="filter-btn" data-filter="other">Прочее</button>
+        </div>
+        
+        <div class="file-list" id="fileList">
+          <!-- Файлы будут добавлены динамически -->
+          <div class="empty-files-message">
+            <i class="fas fa-folder-open"></i>
+            <p>Нет загруженных файлов</p>
+            <button class="upload-btn">Загрузить первый файл</button>
+          </div>
+        </div>
+      </div>
+    </section>
+    
+    <!-- Правая панель: Информация о группе и чат -->
+    <section class="group-info panel">
+      <div class="panel-header">
+        <h2><i class="fas fa-users"></i> <span id="currentGroupName">Выберите группу</span></h2>
+        <div class="panel-controls">
+          <button id="groupSettingsBtn" class="control-button">
+            <i class="fas fa-cog"></i>
+          </button>
+          <button id="inviteMemberBtn" class="control-button">
+            <i class="fas fa-user-plus"></i>
+          </button>
+        </div>
+      </div>
+      
+      <div class="group-content">
+        <!-- Информация о группе -->
+        <div class="group-details">
+          <div class="members-section">
+            <h3>Участники</h3>
+            <div class="members-list" id="membersList">
+              <!-- Участники будут добавлены динамически -->
+            </div>
+          </div>
+          
+          <div class="tasks-section">
+            <h3>Задания</h3>
+            <div class="tasks-controls">
+              <button id="addTaskBtn" class="task-control-btn">
+                <i class="fas fa-plus"></i> Новое задание
+              </button>
+              <div class="task-filter">
+                <select id="taskFilterSelect">
+                  <option value="all">Все задания</option>
+                  <option value="active">Активные</option>
+                  <option value="completed">Выполненные</option>
+                </select>
+              </div>
+            </div>
+            <div class="tasks-list" id="tasksList">
+              <!-- Задания будут добавлены динамически -->
+            </div>
+          </div>
+        </div>
+        
+        <!-- Групповой чат -->
+        <div class="chat-section">
+          <div class="chat-header">
+            <h3>Групповой чат</h3>
+          </div>
+          
+          <div class="chat-messages" id="chatMessages">
+            <!-- Сообщения будут добавлены динамически -->
+            <div class="empty-chat-message">
+              <i class="fas fa-comments"></i>
+              <p>Выберите группу, чтобы начать общение</p>
+            </div>
+          </div>
+          
+          <div class="chat-input">
+            <textarea id="messageInput" placeholder="Введите сообщение..."></textarea>
+            <div class="chat-controls">
+              <button id="attachFileBtn" class="chat-control-btn">
+                <i class="fas fa-paperclip"></i>
+              </button>
+              <button id="sendMessageBtn" class="chat-control-btn send-btn">
+                <i class="fas fa-paper-plane"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+  
+  <!-- Модальные окна -->
+  <div class="modal" id="loginModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Вход в систему</h2>
+        <span class="close-modal">&times;</span>
+      </div>
+      <div class="modal-body">
+        <form id="loginForm">
+          <div class="form-group">
+            <label for="loginEmail">Email</label>
+            <input type="email" id="loginEmail" required>
+          </div>
+          <div class="form-group">
+            <label for="loginPassword">Пароль</label>
+            <input type="password" id="loginPassword" required>
+          </div>
+          <div class="form-actions">
+            <button type="submit" class="btn-primary">Войти</button>
+            <a href="#forgot-password" class="forgot-password">Забыли пароль?</a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  
+  <div class="modal" id="registerModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Регистрация</h2>
+        <span class="close-modal">&times;</span>
+      </div>
+      <div class="modal-body">
+        <form id="registerForm">
+          <div class="form-group">
+            <label for="registerName">Имя</label>
+            <input type="text" id="registerName" required>
+          </div>
+          <div class="form-group">
+            <label for="registerEmail">Email</label>
+            <input type="email" id="registerEmail" required>
+          </div>
+          <div class="form-group">
+            <label for="registerPassword">Пароль</label>
+            <input type="password" id="registerPassword" required>
+          </div>
+          <div class="form-group">
+            <label for="registerConfirmPassword">Подтвердите пароль</label>
+            <input type="password" id="registerConfirmPassword" required>
+          </div>
+          <div class="form-actions">
+            <button type="submit" class="btn-primary">Зарегистрироваться</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  
+  <div class="modal" id="createGroupModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Создать новую группу</h2>
+        <span class="close-modal">&times;</span>
+      </div>
+      <div class="modal-body">
+        <form id="createGroupForm">
+          <div class="form-group">
+            <label for="groupName">Название группы</label>
+            <input type="text" id="groupName" required>
+          </div>
+          <div class="form-group">
+            <label for="groupDescription">Описание</label>
+            <textarea id="groupDescription"></textarea>
+          </div>
+          <div class="form-actions">
+            <button type="submit" class="btn-primary">Создать группу</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  
+  <div class="modal" id="uploadFileModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Загрузить файл</h2>
+        <span class="close-modal">&times;</span>
+      </div>
+      <div class="modal-body">
+        <form id="uploadFileForm">
+          <div class="file-upload-area">
+            <input type="file" id="fileUploadInput" multiple>
+            <div class="file-upload-placeholder">
+              <i class="fas fa-cloud-upload-alt"></i>
+              <p>Перетащите файлы сюда или нажмите для выбора</p>
+            </div>
+          </div>
+          <div class="upload-file-list" id="uploadFileList"></div>
+          <div class="form-actions">
+            <button type="submit" class="btn-primary">Загрузить</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  
+  <div class="modal" id="assignTaskModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Назначить задание</h2>
+        <span class="close-modal">&times;</span>
+      </div>
+      <div class="modal-body">
+        <form id="assignTaskForm">
+          <div class="form-group">
+            <label for="taskTitle">Название задания</label>
+            <input type="text" id="taskTitle" required>
+          </div>
+          <div class="form-group">
+            <label for="taskDescription">Описание</label>
+            <textarea id="taskDescription"></textarea>
+          </div>
+          <div class="form-group">
+            <label for="taskAssignee">Назначить участнику</label>
+            <select id="taskAssignee" required>
+              <!-- Участники будут добавлены динамически -->
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="taskDueDate">Срок выполнения</label>
+            <input type="date" id="taskDueDate">
+          </div>
+          <div class="form-actions">
+            <button type="submit" class="btn-primary">Назначить</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  
+  <div class="tooltip" id="groupTooltip">
+    <div class="tooltip-header">
+      <h4 id="tooltipGroupName">Название группы</h4>
+      <span id="tooltipUserRole">Роль: Разработчик</span>
+    </div>
+    <div class="tooltip-content">
+      <div class="tooltip-section">
+        <h5>Активное задание:</h5>
+        <p id="tooltipActiveTask" class="active-task">Разработка интерфейса</p>
+      </div>
+      <div class="tooltip-section">
+        <h5>Выполненные задания:</h5>
+        <ul id="tooltipCompletedTasks" class="completed-tasks">
+          <li>Настройка проекта</li>
+          <li>Создание базы данных</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  
+  <div class="toast-container" id="toastContainer"></div>
+  
+  <!-- Модальное окно для приглашения участника -->
+  <div id="inviteMemberModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Пригласить участника</h2>
+        <span class="close-modal">&times;</span>
+      </div>
+      <div class="modal-body">
+        <form id="inviteMemberForm">
+          <div class="form-group">
+            <label for="inviteEmail">Email участника</label>
+            <input type="email" id="inviteEmail" required placeholder="example@email.com">
+          </div>
+          <div class="form-group">
+            <label for="inviteRole">Роль в группе</label>
+            <select id="inviteRole" required>
+              <option value="member">Участник</option>
+              <option value="moderator">Модератор</option>
+              <option value="admin">Администратор</option>
+            </select>
+          </div>
+          <div class="form-actions">
+            <button type="submit" class="btn-primary">Отправить приглашение</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Подключение скриптов -->
+  <script src="script.js"></script>
+  <script src="animations.js"></script>
+  <script src="network.js"></script>
+  <script src="auth.js"></script>
+</body>
+</html> 
